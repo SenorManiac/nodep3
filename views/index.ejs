@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Only Inventory</title>
+    <script>
+        const theme = localStorage.getItem('theme');
+        const themeLink = document.createElement('link');
+        themeLink.id = 'theme-link';
+        themeLink.rel = 'stylesheet';
+        themeLink.href = theme === 'dark' ? '/dark-styles.css' : '/styles.css';
+        document.head.appendChild(themeLink);
+    </script>
+    <script src="/toggle-theme.js" defer></script>
+</head>
+
+<body>
+    <header>
+        <h1>Only Inventory</h1>
+        <nav>
+            <a href="/products">Products</a>
+            <a href="/categories">Categories</a>
+            <button id="theme-toggle" aria-label="Toggle Theme">🌙</button>
+        </nav>
+    </header>
+    <main>
+        <ul>
+            <% products.forEach(product => { %>
+                <li>
+                    <strong><%= product.name %>:</strong> <%= product.description %>
+                    <br><small><%= product.price %></small><br>Quantity: <%= product.quantity %>
+                    <button onclick="window.location.href='/products/<%= product.id %>'">Edit</button>
+                    <button onclick="window.location.href='/products/delete/<%= product.id %>'">Delete</button>
+                    <button onclick="document.getElementById('update-form-<%= product.id %>').style.display = 'block';">Update</button>
+                <div id="update-form-<%= product.id %>" style="display:none;">
+                    <form action="/updateproduct/<%= product.id %>" method="POST">
+                        <input type="hidden" name="id" value="<%= product.id %>">
+                        <div class="form-group">
+                            <label for="name-<%= product.id %>">Name:</label>
+                            <input type="text" id="name-<%= product.id %>" name="name" value="<%= product.name %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sku-<%= product.id %>">SKU:</label>
+                            <input type="text" id="sku-<%= product.id %>" name="sku" value="<%= product.sku %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="description-<%= product.id %>">Description:</label>
+                            <textarea id="description-<%= product.id %>" name="description" required><%= product.description %></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="category-<%= product.id %>">Category:</label>
+                            <input type="text" id="category-<%= product.id %>" name="category" value="<%= product.category %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="quantity-<%= product.id %>">Quantity:</label>
+                            <input type="number" id="quantity-<%= product.id %>" name="quantity" value="<%= product.quantity %>" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="price-<%= product.id %>">Price:</label>
+                            <input type="number" id="price-<%= product.id %>" name="price" value="<%= product.price %>" required>
+                        </div>
+                        <button type="submit">Update</button>
+                        <button type="button" onclick="document.getElementById('update-form-<%= product.id %>').style.display = 'none';">Cancel</button>
+                    </form>
+                </div>
+                </li>
+            <% }) %>
+        </ul>
+    </main>
+</body>
+</html>

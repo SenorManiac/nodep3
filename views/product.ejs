@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Only Inventory</title>
+    <script>
+        const theme = localStorage.getItem('theme');
+        const themeLink = document.createElement('link');
+        themeLink.id = 'theme-link';
+        themeLink.rel = 'stylesheet';
+        themeLink.href = theme === 'dark' ? '/dark-styles.css' : '/styles.css';
+        document.head.appendChild(themeLink);
+    </script>
+    <script src="/toggle-theme.js" defer></script>
+</head>
+    <header>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/products">Products</a>
+            <a href="javascript:history.back()">Back</a>
+        </nav>
+    </header>
+    <div class="product-container">
+        <h1><%= product.name %></h1>
+        <% if (imageUrl) { %>
+            <img src="<%= imageUrl %>" alt="<%= product.name %>" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 20px;">
+        <% } %>
+        <p class="price">$<%= product.price %></p>
+        <p class="description"><%= product.description %></p>
+        <button>Add to Cart</button>
+        <div class="product-details">
+            <p><strong>Product ID:</strong> <%= product.id %></p>
+            <p><strong>SKU:</strong> <%= product.sku %></p>
+            <p><strong>Category:</strong> <%= product.category %></p>
+            <p><strong>Quantity:</strong> <%= product.quantity %></p>
+        </div>
+    </div>
+</body>
+</html>
