@@ -186,3 +186,39 @@ form select {
 .product-container button:hover {
     background-color: #1565c0;
 }
+
+#categorygrid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+#categorygrid li{
+    display: flex;
+    justify-content: center;
+    flex-direction: column ;
+    list-style: none;
+    padding: 1rem;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    align-content: center  ;
+    text-align: center;
+}
+.categorybuttons{
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0;
+    background: none;
+    border: none;
+    
+
+}
+
+.categorybuttons img {
+    transition: transform 0.2s ease-in-out;
+}
+
+.categorybuttons img:hover {
+    transform: scale(1.2);
+}

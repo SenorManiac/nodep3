@@ -3,10 +3,10 @@ const inventoryController = require("../controllers/inventoryController");
 
 const router = express.Router();
 
-// Route to render the main page with messages
-router.get("/", inventoryController.getProductsIndex);
 
-// Route to handle form submissions
+router.get("/", inventoryController.getProductsAndCategories);
+
+
 router.post("/addcategory", async (req, res) => {
     try {
         await inventoryController.addCategory(req, res);
@@ -16,15 +16,15 @@ router.post("/addcategory", async (req, res) => {
 });
 router.post("/addproduct", inventoryController.addProduct);
 router.post("/deletecategory/:id", inventoryController.deleteCategory);
-router.post("/deleteproduct/:id", inventoryController.deleteProduct);
+router.get("/deleteproduct/:id", inventoryController.deleteProduct);
 router.post("/updatecategory", inventoryController.updateCategory);
 router.post("/updateproduct/:id", inventoryController.updateProduct);
 
 
-
+router.get("/categories/:name/delete", inventoryController.deleteCategory);
 
 router.get("/addcategory", (req, res) => {
-    res.render("addCategory"); 
+    res.render("addcategory"); 
 });
 router.get("/addproduct", inventoryController.addProductPage);
 

@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Only Inventory</title>
+    <link rel="stylesheet" href="/styles.css">
     <script>
         const theme = localStorage.getItem('theme');
         const themeLink = document.createElement('link');
@@ -14,6 +15,7 @@
     </script>
     <script src="/toggle-theme.js" defer></script>
 </head>
+<body>
     <header>
         <nav>
             <a href="/">Home</a>
@@ -21,15 +23,27 @@
             <a href="javascript:history.back()">Back</a>
         </nav>
     </header>
-<body>
-    <h1>Categories</h1>
-    <a href="/addcategory">Add Category</a>
-    <ul>
-        <% categories.forEach(function(category) { %>
-            <li><%= category.name %>
-                <button onclick="location.href='/categories/<%= category.name %>/products'">View Products</button>
-            </li>
-        <% }); %>
-    </ul>
+    <main>
+        <h1>Categories</h1>
+        <a href="/addcategory">Add Category</a>
+        <% if (typeof errorMessage !== 'undefined') { %>
+            <div class="error-message"><%= errorMessage %> <button onclick="document.getElementsByClassName('error-message')[0].style.display='none'">X</button>
+            </div>
+        <% } %>
+        <ul id="categorygrid">
+            <% categories.forEach(category => { %>
+                <li>
+                    <strong><%= category.name %></strong>
+                    <% const imageUrl = imageUrls.find(img => img.id === category.id)?.imageUrl; %>
+                    <% if (imageUrl) { %>
+                        <button class="categorybuttons" onclick="location.href='/categories/<%= category.name %>/products'">
+                            <img src="<%= imageUrl %>" alt="<%= category.name %>" style="max-width: 13em; height: 13em; border-radius: 10px; margin-bottom: 10px;">
+                        </button>
+                    <% } %>
+                </li>
+            <% }) %>
+        
+        </ul>
+    </main>
 </body>
 </html>

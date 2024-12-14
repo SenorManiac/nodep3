@@ -1,3 +1,4 @@
+const { name } = require('ejs');
 const pool = require('./pool');
 
 async function getCategories() {
@@ -5,6 +6,16 @@ async function getCategories() {
     try {
         const result = await client.query('SELECT * FROM categories');
         return result.rows;
+    } finally {
+        client.release();
+    }
+}
+
+async function getCategoryByName(name) {
+    const client = await pool.connect();
+    try {
+        const result = await client.query('SELECT * FROM categories WHERE name = $1', [name]);
+        return result.rows[0];
     } finally {
         client.release();
     }
@@ -26,10 +37,10 @@ async function addCategory(categories) {
         client.release();
     }
 }
-async function deleteCategory(id) {
+async function deleteCategory(name) {
     const client = await pool.connect();
     try {
-        await client.query('DELETE FROM categories WHERE id = $1', [id]);
+        await client.query('DELETE FROM categories WHERE name = $1', [name]);
     } finally {
         client.release();
     }
@@ -49,5 +60,6 @@ module.exports = {
     getCategories,
     addCategory,
     deleteCategory,
-    updateCategory
+    updateCategory,
+    getCategoryByName
 };

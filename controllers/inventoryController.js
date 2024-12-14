@@ -3,10 +3,14 @@ const db2 = require("../db/getProducts");
 const fetchImage = require("../controllers/imageController");
 const { get } = require("../routes");
 
-getCategories = async (req, res) => {
+const getCategories = async (req, res) => {
     try {
         const categories = await db.getCategories();
-        res.render("categories", { categories });
+        const imageUrls = await Promise.all(categories.map(async category => {
+            const imageUrl = await fetchImage(category.name);
+            return { id: category.id, imageUrl };
+        }));
+        res.render("categories", { categories, imageUrls });
     } catch (error) {
         res.status(500).send("Error fetching categories");
     }
@@ -39,17 +43,34 @@ const getProductsByCategory = async (req, res) => {
     const { name } = req.params;
     try {
         const products = await db2.getProductsByCategory(name);
-        res.render("products", { products });
+        const imageUrls = await Promise.all(products.map(async product => {
+            const imageUrl = await fetchImage(product.name);
+            return { id: product.id, imageUrl };
+        }));
+        const category = await db.getCategoryByName(name);
+        console.log(category);
+        res.render("products", { products, imageUrls, category });
     } catch (error) {
         res.status(500).send("Error fetching products");
     }
 };
 
-deleteCategory = async (req, res) => {
-    const { id } = req.params;
-    try {
-        await db.deleteCategory(id);
-        res.redirect("../../categories");
+
+const deleteCategory = async (req, res) => {
+    const { name } = req.params;
+    console.log(name);
+    try {        
+        const products = await db2.getProductsByCategory(name);
+        if (products.length > 0) {
+            const categories = await db.getCategories();
+            const imageUrls = await Promise.all(categories.map(async category => {
+                const imageUrl = await fetchImage(category.name);
+                return { id: category.id, imageUrl };
+            }));
+            return res.render("categories", { categories, imageUrls, errorMessage: "Cannot delete category with products" });
+        }
+        await db.deleteCategory(name);
+        res.redirect("/categories");
     } catch (error) {
         res.status(500).send("Error deleting category");
     }
@@ -87,7 +108,8 @@ const getProductsById = async (req, res) => {
             return res.status(404).send("Product not found");
         }
         const imageUrl = await fetchImage(product.description);
-        res.render("product", { product, imageUrl });
+        const categories = await db.getCategories();
+        res.render("product", { product, imageUrl, categories });
     } catch (error) {
         res.status(500).send("Error fetching product");
     }
@@ -108,7 +130,7 @@ addProduct = async (req, res) => {
     }
 }
 
-deleteProduct = async (req, res) => {
+const deleteProduct = async (req, res) => {
     const { id } = req.params;
     await db2.deleteProduct(id);
     res.redirect("../../products");
@@ -119,6 +141,36 @@ const updateProduct = async (req, res) => {
     await db2.updateProduct({ id, name, sku, description, category, quantity, price });
     res.redirect("../products/" + id);
 };
+
+const getProductsAndCategories = async (req, res) => {
+    try {
+        const products = await db2.getProducts();
+        const categories = await db.getCategories();
+        const imageUrls = await Promise.all(categories.map(async category => {
+            const imageUrl = await fetchImage(category.name);
+            return { id: category.id, imageUrl };
+        }));
+        res.render("index", { products, categories, imageUrls });
+    } catch (error) {
+        res.status(500).send("Error fetching products and categories");
+    }
+};
+
+const getProductsAndCategories2 = async (req, res) => {
+    try {
+        const products = await db2.getProducts();
+        const categories = await db.getCategories();
+        const imageUrls = await Promise.all(categories.map(async category => {
+            const imageUrl = await fetchImage(category.name);
+            return { id: category.id, imageUrl };
+        }));
+        res.render("products", { products, categories, imageUrls });
+    } catch (error) {
+        res.status(500).send("Error fetching products and categories");
+    }
+};
+
+
 
 module.exports = {
     getCategories,
@@ -132,5 +184,6 @@ module.exports = {
     addProductPage,
     addProduct,
     deleteProduct,
-    updateProduct
+    updateProduct,
+    getProductsAndCategories,
 };
