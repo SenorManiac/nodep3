@@ -6,12 +6,20 @@ const { get } = require("../routes");
 const getCategories = async (req, res) => {
     try {
         const categories = await db.getCategories();
-        const imageUrls = await Promise.all(categories.map(async category => {
-            const imageUrl = await fetchImage(category.name);
-            return { id: category.id, imageUrl };
+        const updatedCategories = await Promise.all(categories.map(async category => {
+            if (!category.imageurl) {
+                const imageurl = await fetchImage(category.name);
+                if (imageurl) {
+                    await db.updateCategoryImage({ id: category.id, imageurl });
+                    return { ...category, imageurl };
+                }
+            }
+            return category;
         }));
-        res.render("categories", { categories, imageUrls });
+
+        res.render("categories", { categories: updatedCategories });
     } catch (error) {
+        console.error('Error in getCategories:', error);
         res.status(500).send("Error fetching categories");
     }
 };
@@ -48,7 +56,6 @@ const getProductsByCategory = async (req, res) => {
             return { id: product.id, imageUrl };
         }));
         const category = await db.getCategoryByName(name);
-        console.log(category);
         res.render("products", { products, imageUrls, category });
     } catch (error) {
         res.status(500).send("Error fetching products");
@@ -58,7 +65,6 @@ const getProductsByCategory = async (req, res) => {
 
 const deleteCategory = async (req, res) => {
     const { name } = req.params;
-    console.log(name);
     try {        
         const products = await db2.getProductsByCategory(name);
         if (products.length > 0) {
@@ -91,15 +97,31 @@ getProductsIndex = async (req, res) => {
     }
 };
 
-getProducts = async (req, res) => {
+
+const getProducts = async (req, res) => {
     try {
         const products = await db2.getProducts();
-        res.render("products", { products });
-    } catch (error) {
-     res.status(500).send("Error fetching products");
-}
-};
+        const updatedProducts = await Promise.all(products.map(async product => {
+            if (!product.imageurl) {
+                const imageurl = await fetchImage(product.name);
+                if (imageurl) {
+                    // Ensure id is passed as a number
+                    await db2.updateProductImage({ 
+                        id: parseInt(product.id), 
+                        imageurl 
+                    });
+                    return { ...product, imageurl };
+                }
+            }
+            return product;
+        }));
 
+        res.render("products", { products: updatedProducts });
+    } catch (error) {
+        console.error('Error in getProducts:', error);
+        res.status(500).send("Error fetching Products");
+    }
+};
 
 const getProductsById = async (req, res) => {
     try {
@@ -169,6 +191,7 @@ const getProductsAndCategories2 = async (req, res) => {
         res.status(500).send("Error fetching products and categories");
     }
 };
+
 
 
 

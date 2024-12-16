@@ -24,7 +24,7 @@
     <div class="product-container">
         <h1><%= product.name %></h1>
         <% if (imageUrl) { %>
-            <img src="<%= imageUrl %>" alt="<%= product.name %>" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 20px;">
+            <img src="<%= product.imageurl %>" alt="<%= product.name %>" style="max-width: 100%; height: auto; border-radius: 10px; margin-bottom: 20px;">
         <% } %>
         <p class="price">$<%= product.price %></p>
         <p class="description"><%= product.description %></p>

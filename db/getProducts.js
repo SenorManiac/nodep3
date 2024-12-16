@@ -62,11 +62,24 @@ async function getProductsByCategory(category) {
     }
 }
 
+async function updateProductImage({ id, imageurl }) {
+    const client = await pool.connect();
+    try {
+        const result = await client.query(
+            'UPDATE products SET imageurl = $1 WHERE id = $2 RETURNING *',
+            [imageurl, parseInt(id)] 
+        );
+        return result.rows[0];
+    } finally {
+        client.release();
+    }
+}
 module.exports = {
     getProducts,
     getProductById,
     addProduct,
     deleteProduct,
     updateProduct,
-    getProductsByCategory
+    getProductsByCategory,
+    updateProductImage
 };

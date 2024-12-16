@@ -29,7 +29,9 @@
     <% } %>
     <ul>
         <% products.forEach(function(product) { %>
-            <li><%= product.name %> - $<%= product.price %>
+            <li>
+                <img src="<%= product.imageurl %>" alt="<%= product.name %>" style="max-width: 13em; height: 13em; border-radius: 10px; margin-bottom: 10px;">
+                <%= product.name %> - $<%= product.price %>
                 <a href="/products/<%= product.id %>">View</a>
             </li>
         <% }); %>

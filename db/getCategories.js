@@ -56,10 +56,23 @@ async function updateCategory(categories) {
     }
 }
 
+async function updateCategoryImage({ id, imageurl }) {
+    const client = await pool.connect();
+    try {
+        const result = await client.query(
+            'UPDATE categories SET imageurl = $1 WHERE id = $2 RETURNING *',
+            [imageurl, id]
+        );
+        return result.rows[0];
+    } finally {
+        client.release();
+    }
+}
 module.exports = {
     getCategories,
     addCategory,
     deleteCategory,
     updateCategory,
-    getCategoryByName
+    getCategoryByName,
+    updateCategoryImage
 };
