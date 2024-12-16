@@ -166,13 +166,18 @@ const updateProduct = async (req, res) => {
 
 const getProductsAndCategories = async (req, res) => {
     try {
-        const products = await db2.getProducts();
-        const categories = await db.getCategories();
-        const imageUrls = await Promise.all(categories.map(async category => {
-            const imageUrl = await fetchImage(category.name);
-            return { id: category.id, imageUrl };
-        }));
-        res.render("index", { products, categories, imageUrls });
+    const categories = await db.getCategories();
+    const updatedCategories = await Promise.all(categories.map(async category => {
+        if (!category.imageurl) {
+            const imageurl = await fetchImage(category.name);
+            if (imageurl) {
+                await db.updateCategoryImage({ id: category.id, imageurl });
+                return { ...category, imageurl };
+            }
+        }
+        return category;
+    }));
+        res.render("index", {  categories: updatedCategories });
     } catch (error) {
         res.status(500).send("Error fetching products and categories");
     }

@@ -43,18 +43,16 @@
         </section>
         <section class="inventory-summary">
             <h2>Inventory Summary</h2>
-            <p>Total Products: <%= products.length %></p>
             <p>Total Categories: <%= categories.length %></p>
             <ul id="categorygrid">
                 <% categories.forEach(category => { %>
                     <li>
                         <strong><%= category.name %></strong>
-                        <% const imageUrl = imageUrls.find(img => img.id === category.id)?.imageUrl; %>
-                        <% if (imageUrl) { %>
+                        
                             <button class="categorybuttons" onclick="location.href='/categories/<%= category.name %>/products'">
-                                <img src="<%= imageUrl %>" alt="<%= category.name %>" style="max-width: 13em; height: 13em; border-radius: 10px; margin-bottom: 10px;">
+                                <img src="<%= category.imageurl %>" alt="<%= category.name %>" style="max-width: 13em; height: 13em; border-radius: 10px; margin-bottom: 10px;">
                             </button>
-                        <% } %>
+                        
                     </li>
                 <% }) %>
             </ul>

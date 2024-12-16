@@ -4,7 +4,7 @@ const inventoryController = require("../controllers/inventoryController");
 const router = express.Router();
 
 
-router.get("/", inventoryController.getCategories);
+router.get("/", inventoryController.getProductsAndCategories);
 
 
 router.post("/addcategory", async (req, res) => {
